@@ -1,14 +1,23 @@
 import sys
 from telebot import TeleBot
 
-from emoticons import emote_keyboard, emote_dict
+from emoticons import emote_keyboard, emote_dict, get_inline_results
 
 bot_token = sys.argv[1]
 bot = TeleBot(token=bot_token)
 
 
+@bot.inline_handler(lambda query: True)
+def send_inline(inline_query):
+    try:
+        results = get_inline_results(inline_query.query)
+        bot.answer_inline_query(inline_query.id, results)
+    except Exception as e:
+        print(e)
+
+
 @bot.message_handler(commands=['search'])
-def search_query(message):
+def search_emote(message):
     key = message.text[message.text.find(' ') + 1:]
     if key in emote_dict:
         bot.send_message(message.chat.id, emote_dict[key])
