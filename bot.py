@@ -24,7 +24,7 @@ def send_welcome(message):
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
     if message.text not in emote_dict.values():
-        bot.send_message(message.chat.id, 'unknown command :/')
+        bot.send_message(message.chat.id, 'unknown command :/', reply_markup=emote_keyboard)
 
 
 print('bot server started.')
