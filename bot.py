@@ -10,7 +10,6 @@ bot = TeleBot(token=bot_token)
 @bot.message_handler(commands=['search'])
 def search_query(message):
     key = message.text[message.text.find(' ') + 1:]
-    print(key)
     if key in emote_dict:
         bot.send_message(message.chat.id, emote_dict[key])
     else:
@@ -19,13 +18,13 @@ def search_query(message):
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, 'Welcome')
-    bot.send_message(message.chat.id, "Tap what you want!", reply_markup=emote_keyboard)
+    bot.send_message(message.chat.id, "All you need to do is tap!", reply_markup=emote_keyboard)
 
 
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
-    bot.reply_to(message, message.text)
+    if message.text not in emote_dict.values():
+        bot.send_message(message.chat.id, 'unknown command :/')
 
 
 print('bot server started.')
