@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 TOKEN = os.environ['TOKEN']
 
 
-buttons = [InlineKeyboardButton(emote) for emote in emotes_dict.values()]
-keyboard = [buttons[x:x+3] for x in range(0, len(buttons), 3)]
+buttons = [InlineKeyboardButton(emote, switch_inline_query=emote) for emote in emotes_dict.values()]
+keyboard = [buttons[x : x + 3] for x in range(0, len(buttons), 3)]
 reply_markup = InlineKeyboardMarkup(keyboard)
 
 all_emote_results = [
