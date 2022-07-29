@@ -62,8 +62,12 @@ def main():
     dp.add_handler(MessageHandler(Filters.text, non_command))
     dp.add_error_handler(errors)
 
-    updater.start_webhook(listen="0.0.0.0", port=int(os.environ.get('PORT', 8443)), url_path=TOKEN)
-    updater.bot.setWebhook('https://emotbot.herokuapp.com/' + TOKEN)
+    updater.start_webhook(
+        listen="0.0.0.0",
+        port=int(os.environ.get("PORT", 8443)),
+        url_path=TOKEN,
+        webhook_url="https://emotbot.herokuapp.com/" + TOKEN,
+    )
     updater.idle()
 
 if __name__ == "__main__":
