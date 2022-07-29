@@ -39,9 +39,6 @@ def search(update, context):
     else:
         update.message.reply_text("found nothing :(")
 
-def help(update, context):
-    update.message.reply_text('Help!')
-
 def non_command(update, context):
     update.message.reply_text("unknown command :/", reply_markup=reply_markup)
 
@@ -54,7 +51,6 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(InlineQueryHandler(inline_query))
     dp.add_handler(CommandHandler("search", search))
-    dp.add_handler(CommandHandler("help", help))
     dp.add_handler(MessageHandler(Filters.text, non_command))
 
     updater.start_webhook(listen="0.0.0.0", port=int(os.environ.get('PORT', 8443)), url_path=TOKEN)
