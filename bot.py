@@ -1,9 +1,14 @@
+import logging
 import os
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import CommandHandler, Filters, InlineQueryHandler, MessageHandler, Updater
 
 from emoticons import emotes_dict
+
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 TOKEN = os.environ['TOKEN']
@@ -42,6 +47,9 @@ def search(update, context):
 def non_command(update, context):
     update.message.reply_text("unknown command :/", reply_markup=reply_markup)
 
+def errors(update, context):
+    logger.warning('Update "%s" caused error "%s"', update, context.error)
+
 
 def main():
     updater = Updater(TOKEN)
@@ -52,6 +60,7 @@ def main():
     dp.add_handler(InlineQueryHandler(inline_query))
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(MessageHandler(Filters.text, non_command))
+    dp.add_error_handler(errors)
 
     updater.start_webhook(listen="0.0.0.0", port=int(os.environ.get('PORT', 8443)), url_path=TOKEN)
     updater.bot.setWebhook('https://emotbot.herokuapp.com/' + TOKEN)
