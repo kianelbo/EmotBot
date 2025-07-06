@@ -1,0 +1,13 @@
+name: Keep Her Awake
+
+on:
+  schedule:
+    - cron: '*/12 * * * *'
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl the app to keep her awake
+        run: |
+          curl -s https://emotbot.onrender.com/
