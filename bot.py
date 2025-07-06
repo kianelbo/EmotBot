@@ -2,7 +2,7 @@ import logging
 import os
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultArticle, InputTextMessageContent
-from telegram.ext import CommandHandler, Filters, InlineQueryHandler, MessageHandler, Updater
+from telegram.ext import Application, CommandHandler, filters, InlineQueryHandler, MessageHandler
 
 from emoticons import emotes_dict
 
@@ -25,7 +25,7 @@ all_emote_results = [
 ]
 
 
-def inline_query(update, context):
+async def inline_query(update, context):
     query = update.inline_query.query
 
     if query in emotes_dict:
@@ -33,44 +33,39 @@ def inline_query(update, context):
     else:
         result = all_emote_results
 
-    update.inline_query.answer(result)
+    await update.inline_query.answer(result)
 
-def start(update, context):
-    update.message.reply_text("Just tap on the one you need!", reply_markup=reply_markup)
+async def start(update, context):
+    await update.message.reply_text("Just tap on the one you need!", reply_markup=reply_markup)
 
-def search(update, context):
+async def search(update, context):
     query = update.message.text
     key = query[query.find(' ') + 1:]
-    if key in emotes_dict:
-        update.message.reply_text(emotes_dict[key])
-    else:
-        update.message.reply_text("found nothing :(")
+    resp = emotes_dict[key] if key in emotes_dict else "found nothing :("
+    await update.message.reply_text(resp)
 
-def non_command(update, context):
-    update.message.reply_text("unknown command :/", reply_markup=reply_markup)
+async def non_command(update, context):
+    await update.message.reply_text("unknown command :/", reply_markup=reply_markup)
 
-def errors(update, context):
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+async def errors(update, context):
+    await logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
 def main():
-    updater = Updater(TOKEN)
+    application = Application.builder().token(TOKEN).build()
 
-    dp = updater.dispatcher
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(InlineQueryHandler(inline_query))
+    application.add_handler(CommandHandler("search", search))
+    application.add_handler(MessageHandler(filters.TEXT, non_command))
+    application.add_error_handler(errors)
 
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(InlineQueryHandler(inline_query))
-    dp.add_handler(CommandHandler("search", search))
-    dp.add_handler(MessageHandler(Filters.text, non_command))
-    dp.add_error_handler(errors)
-
-    updater.start_webhook(
+    application.run_webhook(
         listen="0.0.0.0",
         port=PORT,
         url_path=TOKEN,
         webhook_url=URL + TOKEN,
     )
-    updater.idle()
 
 if __name__ == "__main__":
     main()
