@@ -11,7 +11,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-TOKEN = os.environ['TOKEN']
+TOKEN = os.environ['BOT_TOKEN']
+URL = os.environ['WEBHOOK_BASE_URL']
+PORT = int(os.environ.get('PORT', 5000))
 
 
 buttons = [InlineKeyboardButton(emote, switch_inline_query=emote) for emote in emotes_dict.values()]
@@ -64,9 +66,9 @@ def main():
 
     updater.start_webhook(
         listen="0.0.0.0",
-        port=int(os.environ.get("PORT", 8443)),
+        port=PORT,
         url_path=TOKEN,
-        webhook_url="https://emotbot.herokuapp.com/" + TOKEN,
+        webhook_url=URL + TOKEN,
     )
     updater.idle()
 
